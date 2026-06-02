@@ -220,15 +220,38 @@ with tab5:
 with tab6:
     st.header("Code Scanner")
 
+    st.markdown(
+        """
+        Upload a project ZIP file. The scanner will inspect the codebase and identify
+        source files, config files, SQL files, and other architecture-relevant assets.
+        """
+    )
+
     uploaded_zip = st.file_uploader(
         "Upload project ZIP file",
         type=["zip"]
     )
 
     if uploaded_zip:
-        st.success("Project ZIP uploaded successfully.")
+        with st.spinner("Scanning uploaded project..."):
+            extracted_path = extract_zip(uploaded_zip)
+            scanned_files_df = scan_project_files(extracted_path)
+            scan_summary = summarize_scan(scanned_files_df)
+            file_type_summary_df = get_file_type_summary(scanned_files_df)
 
-        st.warning(
-            "Next step: connect this ZIP file to src/code_scanner.py, "
-            "then generate entities and dependencies dynamically."
-        )
+        st.success("Project scanned successfully.")
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Total Files Scanned", scan_summary["total_files"])
+        c2.metric("File Types Found", scan_summary["file_types"])
+        c3.metric("Total Size KB", scan_summary["total_size_kb"])
+
+        st.subheader("File Type Summary")
+        if not file_type_summary_df.empty:
+            st.bar_chart(file_type_summary_df.set_index("file_type"))
+            st.dataframe(file_type_summary_df, use_container_width=True)
+        else:
+            st.warning("No supported files found in the uploaded ZIP.")
+
+        st.subheader("Scanned Files")
+        st.dataframe(scanned_files_df, use_container_width=True)
