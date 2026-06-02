@@ -388,29 +388,58 @@ with tab6:
     uploaded_zip = st.file_uploader(
         "Upload project ZIP file",
         type=["zip"],
+        key="project_zip_uploader"
     )
 
-    if uploaded_zip:
+    if uploaded_zip is None:
+        st.info("Upload a ZIP project file to start scanning.")
+
+        if "scanned_files_df" in st.session_state:
+            st.success("Previous uploaded project scan is still available in session.")
+        else:
+            st.warning("No project has been uploaded yet.")
+
+    else:
         upload_id = f"{uploaded_zip.name}_{uploaded_zip.size}"
 
-        with st.spinner("Scanning and parsing uploaded project..."):
-            extracted_path = extract_zip(uploaded_zip)
+        should_rescan = (
+            st.session_state.get("last_upload_id") != upload_id
+            or "dynamic_entities_df" not in st.session_state
+            or "dynamic_dependencies_df" not in st.session_state
+            or "dynamic_graph" not in st.session_state
+        )
 
-            scanned_files_df = scan_project_files(extracted_path)
-            scan_summary = summarize_scan(scanned_files_df)
-            file_type_summary_df = get_file_type_summary(scanned_files_df)
+        if should_rescan:
+            with st.spinner("Scanning and parsing uploaded project..."):
+                extracted_path = extract_zip(uploaded_zip)
 
-            parsed_entities_df, parsed_dependencies_df = parse_scanned_files(scanned_files_df)
-            dynamic_graph = build_dynamic_graph(parsed_entities_df, parsed_dependencies_df)
+                scanned_files_df = scan_project_files(extracted_path)
+                scan_summary = summarize_scan(scanned_files_df)
+                file_type_summary_df = get_file_type_summary(scanned_files_df)
 
-            st.session_state["dynamic_mode"] = True
-            st.session_state["dynamic_entities_df"] = parsed_entities_df
-            st.session_state["dynamic_dependencies_df"] = parsed_dependencies_df
-            st.session_state["dynamic_graph"] = dynamic_graph
-            st.session_state["scanned_files_df"] = scanned_files_df
-            st.session_state["last_upload_id"] = upload_id
+                parsed_entities_df, parsed_dependencies_df = parse_scanned_files(scanned_files_df)
+                dynamic_graph = build_dynamic_graph(parsed_entities_df, parsed_dependencies_df)
 
-        st.success("Project scanned and parsed successfully.")
+                st.session_state["dynamic_mode"] = True
+                st.session_state["dynamic_entities_df"] = parsed_entities_df
+                st.session_state["dynamic_dependencies_df"] = parsed_dependencies_df
+                st.session_state["dynamic_graph"] = dynamic_graph
+                st.session_state["scanned_files_df"] = scanned_files_df
+                st.session_state["scan_summary"] = scan_summary
+                st.session_state["file_type_summary_df"] = file_type_summary_df
+                st.session_state["last_upload_id"] = upload_id
+
+            st.success("Project scanned and parsed successfully.")
+        else:
+            st.success("Using previously scanned project from session.")
+
+    if "scanned_files_df" in st.session_state:
+        scanned_files_df = st.session_state["scanned_files_df"]
+        scan_summary = st.session_state["scan_summary"]
+        file_type_summary_df = st.session_state["file_type_summary_df"]
+        parsed_entities_df = st.session_state["dynamic_entities_df"]
+        parsed_dependencies_df = st.session_state["dynamic_dependencies_df"]
+        dynamic_graph = st.session_state["dynamic_graph"]
 
         c1, c2, c3, c4, c5 = st.columns(5)
         c1.metric("Total Files Scanned", scan_summary["total_files"])
@@ -454,11 +483,16 @@ with tab6:
             st.warning("Cannot run dynamic impact analysis because no entities were detected.")
         else:
             entity_options_df = parsed_entities_df.copy()
-            entity_options_df["display_name"] = entity_options_df["name"] + " | " + entity_options_df["type"]
+            entity_options_df["display_name"] = (
+                entity_options_df["name"].astype(str)
+                + " | "
+                + entity_options_df["type"].astype(str)
+            )
 
             selected_dynamic_entity = st.selectbox(
                 "Select detected component for impact analysis",
                 entity_options_df["display_name"].tolist(),
+                key="dynamic_impact_component_selector"
             )
 
             selected_dynamic_row = entity_options_df[
@@ -510,3 +544,18 @@ with tab6:
         st.info(
             "To use uploaded project data in the other tabs, select `Uploaded Project` in the sidebar data source selector."
         )
+
+    if st.button("Clear Uploaded Project Session", key="clear_uploaded_project_session"):
+        for key in [
+            "dynamic_mode",
+            "dynamic_entities_df",
+            "dynamic_dependencies_df",
+            "dynamic_graph",
+            "scanned_files_df",
+            "scan_summary",
+            "file_type_summary_df",
+            "last_upload_id",
+        ]:
+            st.session_state.pop(key, None)
+
+        st.success("Uploaded project session cleared. Refresh or upload a new ZIP.")
