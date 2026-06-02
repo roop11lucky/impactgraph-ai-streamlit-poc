@@ -58,8 +58,15 @@ with st.sidebar:
 
     run_analysis = st.button("Run Impact Analysis", type="primary")
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(
-    ["Impact Analysis", "Dependency Graph", "Test Recommendations", "Enterprise Data", "POC Roadmap"]
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+    [
+        "Impact Analysis",
+        "Dependency Graph",
+        "Test Recommendations",
+        "Enterprise Data",
+        "POC Roadmap",
+        "Code Scanner"
+    ]
 )
 
 if run_analysis:
@@ -200,3 +207,18 @@ with tab5:
         "Do not start with full enterprise integrations. That will slow you down. "
         "First prove the core value: change input → blast radius → risk score → recommended tests → executive summary."
     )
+with tab6:
+    st.header("Code Scanner")
+
+    uploaded_zip = st.file_uploader(
+        "Upload project ZIP file",
+        type=["zip"]
+    )
+
+    if uploaded_zip:
+        st.success("Project ZIP uploaded successfully.")
+
+        st.warning(
+            "Next step: connect this ZIP file to src/code_scanner.py, "
+            "then generate entities and dependencies dynamically."
+        )
