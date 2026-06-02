@@ -203,7 +203,6 @@ with tab5:
                 "Scope": "Impact analysis from real codebase",
                 "Status": "Future",
             },
-            ,
             {
                 "Phase": "Phase 3",
                 "Scope": "Local LLM recommendations",
