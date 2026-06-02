@@ -20,6 +20,11 @@ from src.recommendation_engine import (
     generate_rollback_plan,
 )
 from src.visualization import create_pyvis_graph
+from src.architecture_analyzer import (
+    analyze_architecture,
+    summarize_architecture,
+    calculate_architecture_health_score,
+)
 
 
 st.set_page_config(
@@ -309,6 +314,26 @@ with tab4:
             st.warning("No dependencies detected yet. Parser rules need to be expanded.")
         else:
             st.dataframe(active_dependencies_df, use_container_width=True)
+
+        architecture_df = st.session_state.get("architecture_df", pd.DataFrame())
+        architecture_summary_df = st.session_state.get("architecture_summary_df", pd.DataFrame())
+        architecture_score = st.session_state.get("architecture_score", 0)
+        architecture_label = st.session_state.get("architecture_label", "Not Available")
+
+        st.subheader("Architecture Discovery Summary")
+        e1, e2, e3 = st.columns(3)
+        e1.metric("Architecture Components", len(architecture_df))
+        e2.metric("Health Score", f"{architecture_score}/100")
+        e3.metric("Health Status", architecture_label)
+
+        if not architecture_summary_df.empty:
+            st.dataframe(architecture_summary_df, use_container_width=True)
+
+        st.subheader("Detected Architecture Components")
+        if architecture_df.empty:
+            st.info("No architecture discovery data available yet.")
+        else:
+            st.dataframe(architecture_df, use_container_width=True)
     else:
         st.subheader("Sample Entities")
         st.dataframe(entities_df, use_container_width=True)
@@ -349,8 +374,8 @@ with tab5:
             },
             {
                 "Phase": "Phase 2.4",
-                "Scope": "Java/Spring Boot, YAML, Docker, Kubernetes, and CI/CD parser rules",
-                "Status": "Next",
+                "Scope": "Architecture discovery engine for apps, services, APIs, DB tables, and config files",
+                "Status": "In Progress",
             },
             {
                 "Phase": "Phase 3",
@@ -419,6 +444,12 @@ with tab6:
 
                 parsed_entities_df, parsed_dependencies_df = parse_scanned_files(scanned_files_df)
                 dynamic_graph = build_dynamic_graph(parsed_entities_df, parsed_dependencies_df)
+                architecture_df = analyze_architecture(scanned_files_df)
+                architecture_summary_df = summarize_architecture(architecture_df)
+                architecture_score, architecture_label = calculate_architecture_health_score(
+                    architecture_df,
+                    parsed_dependencies_df
+                )
 
                 st.session_state["dynamic_mode"] = True
                 st.session_state["dynamic_entities_df"] = parsed_entities_df
@@ -427,6 +458,10 @@ with tab6:
                 st.session_state["scanned_files_df"] = scanned_files_df
                 st.session_state["scan_summary"] = scan_summary
                 st.session_state["file_type_summary_df"] = file_type_summary_df
+                st.session_state["architecture_df"] = architecture_df
+                st.session_state["architecture_summary_df"] = architecture_summary_df
+                st.session_state["architecture_score"] = architecture_score
+                st.session_state["architecture_label"] = architecture_label
                 st.session_state["last_upload_id"] = upload_id
 
             st.success("Project scanned and parsed successfully.")
@@ -440,13 +475,18 @@ with tab6:
         parsed_entities_df = st.session_state["dynamic_entities_df"]
         parsed_dependencies_df = st.session_state["dynamic_dependencies_df"]
         dynamic_graph = st.session_state["dynamic_graph"]
+        architecture_df = st.session_state.get("architecture_df", pd.DataFrame())
+        architecture_summary_df = st.session_state.get("architecture_summary_df", pd.DataFrame())
+        architecture_score = st.session_state.get("architecture_score", 0)
+        architecture_label = st.session_state.get("architecture_label", "Not Available")
 
-        c1, c2, c3, c4, c5 = st.columns(5)
+        c1, c2, c3, c4, c5, c6 = st.columns(6)
         c1.metric("Total Files Scanned", scan_summary["total_files"])
         c2.metric("File Types Found", scan_summary["file_types"])
         c3.metric("Total Size KB", scan_summary["total_size_kb"])
         c4.metric("Detected Entities", len(parsed_entities_df))
         c5.metric("Detected Dependencies", len(parsed_dependencies_df))
+        c6.metric("Architecture Components", len(architecture_df))
 
         st.subheader("File Type Summary")
         if not file_type_summary_df.empty:
@@ -474,6 +514,28 @@ with tab6:
             )
         else:
             st.dataframe(parsed_dependencies_df, use_container_width=True)
+
+        st.divider()
+
+        st.subheader("Architecture Discovery")
+
+        a1, a2, a3 = st.columns(3)
+        a1.metric("Architecture Components", len(architecture_df))
+        a2.metric("Architecture Health Score", f"{architecture_score}/100")
+        a3.metric("Health Status", architecture_label)
+
+        st.subheader("Architecture Component Summary")
+        if architecture_summary_df.empty:
+            st.warning("No architecture-level components detected yet.")
+        else:
+            st.bar_chart(architecture_summary_df.set_index("component_type"))
+            st.dataframe(architecture_summary_df, use_container_width=True)
+
+        st.subheader("Detected Architecture Components")
+        if architecture_df.empty:
+            st.warning("No architecture components detected.")
+        else:
+            st.dataframe(architecture_df, use_container_width=True)
 
         st.divider()
 
@@ -554,8 +616,14 @@ with tab6:
             "scanned_files_df",
             "scan_summary",
             "file_type_summary_df",
+            "architecture_df",
+            "architecture_summary_df",
+            "architecture_score",
+            "architecture_label",
             "last_upload_id",
         ]:
             st.session_state.pop(key, None)
 
         st.success("Uploaded project session cleared. Refresh or upload a new ZIP.")
+
+
