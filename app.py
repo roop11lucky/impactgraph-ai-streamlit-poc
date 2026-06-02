@@ -180,24 +180,36 @@ with tab5:
             },
             {
                 "Phase": "Phase 2",
-                "Scope": "GitHub repo parser, API spec parser, database schema scanner",
+                "Scope": "Added code upload scanner",
                 "Status": "Next",
+            },
+            {
+                "Phase": "Phase 2",
+                "Scope": "Repository parser implementation",
+                "Status": "Next",
+            },
+            {
+                "Phase": "Phase 2",
+                "Scope": "Dynamic dependency graph generation",
+                "Status": "Future",
             },
             {
                 "Phase": "Phase 3",
-                "Scope": "Neo4j Aura Free integration and Cypher queries",
-                "Status": "Next",
-            },
-            {
-                "Phase": "Phase 4",
-                "Scope": "LLM/RAG integration with architecture docs and code summaries",
+                "Scope": "Neo4j integration",
                 "Status": "Future",
             },
+            ,
             {
-                "Phase": "Phase 5",
-                "Scope": "Jira, Slack/Teams, CI/CD pipeline integration",
+                "Phase": "Phase 3",
+                "Scope": "Impact analysis from real codebase",
                 "Status": "Future",
             },
+            ,
+            {
+                "Phase": "Phase 3",
+                "Scope": "Local LLM recommendations",
+                "Status": "Future",
+            }
         ]
     )
     st.dataframe(roadmap, use_container_width=True)
