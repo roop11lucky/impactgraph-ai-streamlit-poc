@@ -198,7 +198,6 @@ with tab5:
                 "Scope": "Neo4j integration",
                 "Status": "Future",
             },
-            ,
             {
                 "Phase": "Phase 3",
                 "Scope": "Impact analysis from real codebase",
