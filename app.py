@@ -3,6 +3,8 @@ import pandas as pd
 import streamlit.components.v1 as components
 import plotly.express as px
 
+from src.repo_parser import parse_scanned_files
+from src.dynamic_graph_builder import build_dynamic_graph
 from src.data_loader import load_entities, load_dependencies, load_test_cases
 from src.graph_engine import build_dependency_graph, get_impacted_nodes
 from src.risk_engine import calculate_risk_score, summarize_impacts
@@ -230,7 +232,7 @@ with tab6:
     st.markdown(
         """
         Upload a project ZIP file. The scanner will inspect the codebase and identify
-        source files, config files, SQL files, and other architecture-relevant assets.
+        source files, config files, SQL files, APIs, database references, and dependency relationships.
         """
     )
 
@@ -240,13 +242,17 @@ with tab6:
     )
 
     if uploaded_zip:
-        with st.spinner("Scanning uploaded project..."):
+        with st.spinner("Scanning and parsing uploaded project..."):
             extracted_path = extract_zip(uploaded_zip)
+
             scanned_files_df = scan_project_files(extracted_path)
             scan_summary = summarize_scan(scanned_files_df)
             file_type_summary_df = get_file_type_summary(scanned_files_df)
 
-        st.success("Project scanned successfully.")
+            parsed_entities_df, parsed_dependencies_df = parse_scanned_files(scanned_files_df)
+            dynamic_graph = build_dynamic_graph(parsed_entities_df, parsed_dependencies_df)
+
+        st.success("Project scanned and parsed successfully.")
 
         c1, c2, c3 = st.columns(3)
         c1.metric("Total Files Scanned", scan_summary["total_files"])
@@ -262,3 +268,83 @@ with tab6:
 
         st.subheader("Scanned Files")
         st.dataframe(scanned_files_df, use_container_width=True)
+
+        st.divider()
+
+        st.subheader("Detected Architecture Entities")
+        if parsed_entities_df.empty:
+            st.warning("No architecture entities detected yet.")
+        else:
+            st.dataframe(parsed_entities_df, use_container_width=True)
+
+        st.subheader("Detected Dependencies")
+        if parsed_dependencies_df.empty:
+            st.warning(
+                "No dependencies detected yet. This means either the uploaded project has limited detectable patterns "
+                "or the parser needs more rules."
+            )
+        else:
+            st.dataframe(parsed_dependencies_df, use_container_width=True)
+
+        st.divider()
+
+        st.subheader("Dynamic Impact Analysis from Uploaded Project")
+
+        if parsed_entities_df.empty:
+            st.warning("Cannot run dynamic impact analysis because no entities were detected.")
+        else:
+            entity_options_df = parsed_entities_df.copy()
+            entity_options_df["display_name"] = (
+                entity_options_df["name"] + " | " + entity_options_df["type"]
+            )
+
+            selected_dynamic_entity = st.selectbox(
+                "Select detected component for impact analysis",
+                entity_options_df["display_name"].tolist()
+            )
+
+            selected_dynamic_row = entity_options_df[
+                entity_options_df["display_name"] == selected_dynamic_entity
+            ].iloc[0]
+
+            selected_dynamic_node = selected_dynamic_row["id"]
+
+            dynamic_impacted = get_impacted_nodes(
+                dynamic_graph,
+                selected_dynamic_node,
+                max_depth=3
+            )
+
+            dynamic_impacted_df = pd.DataFrame(dynamic_impacted)
+
+            if dynamic_impacted_df.empty:
+                st.warning(
+                    "No downstream impact found for this component yet. "
+                    "This is expected in early parser versions."
+                )
+            else:
+                dynamic_score, dynamic_band = calculate_risk_score(
+                    selected_dynamic_row.to_dict(),
+                    dynamic_impacted_df,
+                    "Service Logic Change"
+                )
+
+                d1, d2, d3 = st.columns(3)
+                d1.metric("Dynamic Risk Score", f"{dynamic_score}/100")
+                d2.metric("Risk Band", dynamic_band)
+                d3.metric("Impacted Components", len(dynamic_impacted_df))
+
+                st.subheader("Impacted Components")
+                st.dataframe(dynamic_impacted_df, use_container_width=True)
+
+                st.subheader("Dynamic Impact Summary")
+
+                impacted_names = dynamic_impacted_df["name"].head(5).tolist()
+                impacted_text = ", ".join(impacted_names)
+
+                st.info(
+                    f"The selected component '{selected_dynamic_row['name']}' may impact "
+                    f"{len(dynamic_impacted_df)} detected components. "
+                    f"Top impacted components: {impacted_text}. "
+                    f"Risk level is {dynamic_band} with score {dynamic_score}/100."
+                )
