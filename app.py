@@ -9,6 +9,7 @@ from src.risk_engine import calculate_risk_score, summarize_impacts
 from src.recommendation_engine import recommend_tests, generate_ai_style_summary, generate_rollback_plan
 from src.visualization import create_pyvis_graph
 
+
 st.set_page_config(
     page_title="ImpactGraph AI",
     page_icon="🧠",
@@ -30,6 +31,12 @@ dependencies_df = load_dependencies()
 test_cases_df = load_test_cases()
 graph = build_dependency_graph(entities_df, dependencies_df)
 
+from src.code_scanner import (
+    extract_zip,
+    scan_project_files,
+    summarize_scan,
+    get_file_type_summary
+)
 with st.sidebar:
     st.header("Change Input")
 
