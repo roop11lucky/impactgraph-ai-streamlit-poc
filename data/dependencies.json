@@ -1,0 +1,152 @@
+[
+  {
+    "source": "app_customer_portal",
+    "target": "svc_customer",
+    "relationship": "USES"
+  },
+  {
+    "source": "app_mobile_app",
+    "target": "svc_customer",
+    "relationship": "USES"
+  },
+  {
+    "source": "app_crm",
+    "target": "svc_customer",
+    "relationship": "USES"
+  },
+  {
+    "source": "app_reporting",
+    "target": "wh_analytics",
+    "relationship": "READS_FROM"
+  },
+  {
+    "source": "svc_customer",
+    "target": "api_customer_v1",
+    "relationship": "EXPOSES"
+  },
+  {
+    "source": "svc_customer",
+    "target": "api_customer_update",
+    "relationship": "EXPOSES"
+  },
+  {
+    "source": "svc_customer",
+    "target": "db_customer",
+    "relationship": "READS_WRITES"
+  },
+  {
+    "source": "svc_customer",
+    "target": "svc_auth",
+    "relationship": "CALLS"
+  },
+  {
+    "source": "svc_customer",
+    "target": "svc_notification",
+    "relationship": "PUBLISHES_EVENT_TO"
+  },
+  {
+    "source": "svc_order",
+    "target": "api_orders",
+    "relationship": "EXPOSES"
+  },
+  {
+    "source": "svc_order",
+    "target": "db_order",
+    "relationship": "READS_WRITES"
+  },
+  {
+    "source": "svc_order",
+    "target": "svc_customer",
+    "relationship": "CALLS"
+  },
+  {
+    "source": "svc_order",
+    "target": "svc_billing",
+    "relationship": "CALLS"
+  },
+  {
+    "source": "svc_billing",
+    "target": "api_billing_invoice",
+    "relationship": "EXPOSES"
+  },
+  {
+    "source": "svc_billing",
+    "target": "db_billing",
+    "relationship": "READS_WRITES"
+  },
+  {
+    "source": "svc_billing",
+    "target": "svc_customer",
+    "relationship": "CALLS"
+  },
+  {
+    "source": "api_customer_v1",
+    "target": "app_customer_portal",
+    "relationship": "CONSUMED_BY"
+  },
+  {
+    "source": "api_customer_v1",
+    "target": "app_mobile_app",
+    "relationship": "CONSUMED_BY"
+  },
+  {
+    "source": "api_customer_update",
+    "target": "app_crm",
+    "relationship": "CONSUMED_BY"
+  },
+  {
+    "source": "api_orders",
+    "target": "app_customer_portal",
+    "relationship": "CONSUMED_BY"
+  },
+  {
+    "source": "db_customer",
+    "target": "pipe_reporting_etl",
+    "relationship": "FEEDS"
+  },
+  {
+    "source": "db_order",
+    "target": "pipe_reporting_etl",
+    "relationship": "FEEDS"
+  },
+  {
+    "source": "db_billing",
+    "target": "pipe_reporting_etl",
+    "relationship": "FEEDS"
+  },
+  {
+    "source": "pipe_reporting_etl",
+    "target": "wh_analytics",
+    "relationship": "LOADS"
+  },
+  {
+    "source": "pipe_customer_ci",
+    "target": "svc_customer",
+    "relationship": "DEPLOYS"
+  },
+  {
+    "source": "pipe_order_ci",
+    "target": "svc_order",
+    "relationship": "DEPLOYS"
+  },
+  {
+    "source": "cap_customer_mgmt",
+    "target": "app_customer_portal",
+    "relationship": "SUPPORTED_BY"
+  },
+  {
+    "source": "cap_customer_mgmt",
+    "target": "app_mobile_app",
+    "relationship": "SUPPORTED_BY"
+  },
+  {
+    "source": "cap_order_to_cash",
+    "target": "svc_order",
+    "relationship": "SUPPORTED_BY"
+  },
+  {
+    "source": "cap_order_to_cash",
+    "target": "svc_billing",
+    "relationship": "SUPPORTED_BY"
+  }
+]

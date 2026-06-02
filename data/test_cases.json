@@ -1,0 +1,58 @@
+[
+  {
+    "test_id": "TC001",
+    "name": "Customer lookup API contract test",
+    "mapped_entity": "api_customer_v1",
+    "test_type": "Contract",
+    "priority": "P0"
+  },
+  {
+    "test_id": "TC002",
+    "name": "Customer profile update regression",
+    "mapped_entity": "api_customer_update",
+    "test_type": "Regression",
+    "priority": "P0"
+  },
+  {
+    "test_id": "TC003",
+    "name": "Mobile app customer login journey",
+    "mapped_entity": "app_mobile_app",
+    "test_type": "E2E",
+    "priority": "P0"
+  },
+  {
+    "test_id": "TC004",
+    "name": "CRM customer sync validation",
+    "mapped_entity": "app_crm",
+    "test_type": "Integration",
+    "priority": "P1"
+  },
+  {
+    "test_id": "TC005",
+    "name": "Order creation end-to-end flow",
+    "mapped_entity": "svc_order",
+    "test_type": "E2E",
+    "priority": "P0"
+  },
+  {
+    "test_id": "TC006",
+    "name": "Billing invoice generation",
+    "mapped_entity": "svc_billing",
+    "test_type": "Integration",
+    "priority": "P0"
+  },
+  {
+    "test_id": "TC007",
+    "name": "Customer warehouse ETL freshness check",
+    "mapped_entity": "pipe_reporting_etl",
+    "test_type": "Data Quality",
+    "priority": "P1"
+  },
+  {
+    "test_id": "TC008",
+    "name": "Authentication dependency validation",
+    "mapped_entity": "svc_auth",
+    "test_type": "Integration",
+    "priority": "P0"
+  }
+]

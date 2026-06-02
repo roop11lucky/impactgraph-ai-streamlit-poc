@@ -1,0 +1,156 @@
+[
+  {
+    "id": "app_customer_portal",
+    "name": "Customer Portal",
+    "type": "Application",
+    "criticality": 5,
+    "owner_team": "Digital Experience Team"
+  },
+  {
+    "id": "app_mobile_app",
+    "name": "Mobile App",
+    "type": "Application",
+    "criticality": 5,
+    "owner_team": "Mobile Engineering"
+  },
+  {
+    "id": "app_crm",
+    "name": "CRM Platform",
+    "type": "Application",
+    "criticality": 4,
+    "owner_team": "Sales Platform Team"
+  },
+  {
+    "id": "app_reporting",
+    "name": "Executive Reporting",
+    "type": "Application",
+    "criticality": 4,
+    "owner_team": "BI Analytics Team"
+  },
+  {
+    "id": "svc_customer",
+    "name": "Customer Service",
+    "type": "Service",
+    "criticality": 5,
+    "owner_team": "Customer Platform Team"
+  },
+  {
+    "id": "svc_order",
+    "name": "Order Service",
+    "type": "Service",
+    "criticality": 5,
+    "owner_team": "Order Management Team"
+  },
+  {
+    "id": "svc_billing",
+    "name": "Billing Service",
+    "type": "Service",
+    "criticality": 5,
+    "owner_team": "Finance Tech Team"
+  },
+  {
+    "id": "svc_notification",
+    "name": "Notification Service",
+    "type": "Service",
+    "criticality": 3,
+    "owner_team": "Platform Services"
+  },
+  {
+    "id": "svc_auth",
+    "name": "Authentication Service",
+    "type": "Service",
+    "criticality": 5,
+    "owner_team": "Identity Team"
+  },
+  {
+    "id": "api_customer_v1",
+    "name": "GET /customers/{id}",
+    "type": "API",
+    "criticality": 5,
+    "owner_team": "Customer Platform Team"
+  },
+  {
+    "id": "api_customer_update",
+    "name": "PUT /customers/{id}",
+    "type": "API",
+    "criticality": 5,
+    "owner_team": "Customer Platform Team"
+  },
+  {
+    "id": "api_orders",
+    "name": "GET /orders",
+    "type": "API",
+    "criticality": 4,
+    "owner_team": "Order Management Team"
+  },
+  {
+    "id": "api_billing_invoice",
+    "name": "POST /billing/invoice",
+    "type": "API",
+    "criticality": 5,
+    "owner_team": "Finance Tech Team"
+  },
+  {
+    "id": "db_customer",
+    "name": "customer_db",
+    "type": "Database",
+    "criticality": 5,
+    "owner_team": "Data Platform"
+  },
+  {
+    "id": "db_order",
+    "name": "order_db",
+    "type": "Database",
+    "criticality": 4,
+    "owner_team": "Data Platform"
+  },
+  {
+    "id": "db_billing",
+    "name": "billing_db",
+    "type": "Database",
+    "criticality": 5,
+    "owner_team": "Data Platform"
+  },
+  {
+    "id": "wh_analytics",
+    "name": "analytics_warehouse",
+    "type": "Database",
+    "criticality": 4,
+    "owner_team": "BI Analytics Team"
+  },
+  {
+    "id": "pipe_customer_ci",
+    "name": "customer-service-ci-cd",
+    "type": "Pipeline",
+    "criticality": 4,
+    "owner_team": "DevOps"
+  },
+  {
+    "id": "pipe_order_ci",
+    "name": "order-service-ci-cd",
+    "type": "Pipeline",
+    "criticality": 4,
+    "owner_team": "DevOps"
+  },
+  {
+    "id": "pipe_reporting_etl",
+    "name": "reporting-etl-pipeline",
+    "type": "Pipeline",
+    "criticality": 4,
+    "owner_team": "Data Engineering"
+  },
+  {
+    "id": "cap_customer_mgmt",
+    "name": "Customer Management",
+    "type": "Business Capability",
+    "criticality": 5,
+    "owner_team": "Business Operations"
+  },
+  {
+    "id": "cap_order_to_cash",
+    "name": "Order to Cash",
+    "type": "Business Capability",
+    "criticality": 5,
+    "owner_team": "Finance Operations"
+  }
+]
